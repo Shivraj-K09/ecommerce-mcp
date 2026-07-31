@@ -50,7 +50,7 @@ pnpm build
 pnpm test
 ```
 
-Run HTTP (port 3000):
+Run HTTP (port 8000):
 
 ```bash
 pnpm start:http
