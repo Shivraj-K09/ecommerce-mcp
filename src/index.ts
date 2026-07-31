@@ -35,7 +35,7 @@ function sendJsonRpcError(
 }
 
 export async function startHttpServer(port: number): Promise<HttpServer> {
-  const app = createMcpExpressApp();
+  const app = createMcpExpressApp({ host: "0.0.0.0" });
   app.use(cors());
 
   const transports = new Map<string, StreamableHTTPServerTransport>();
@@ -111,7 +111,7 @@ export async function startHttpServer(port: number): Promise<HttpServer> {
   app.all("/messages", handleMcpRoute);
 
   const httpServer = await new Promise<HttpServer>((resolve, reject) => {
-    const server = app.listen(port, (error?: Error) => {
+    const server = app.listen(port, "0.0.0.0", (error?: Error) => {
       if (error) {
         reject(error);
         return;
