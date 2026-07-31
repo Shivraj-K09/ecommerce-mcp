@@ -103,7 +103,7 @@ export async function startHttpServer(port: number): Promise<HttpServer> {
   });
 
   app.get("/", (_req: Request, res: Response) => {
-    res.send(renderDashboardHtml(port));
+    res.send(renderDashboardHtml());
   });
 
   app.all("/mcp", handleMcpRoute);

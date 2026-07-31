@@ -1,6 +1,4 @@
-export function renderDashboardHtml(port = 8001): string {
-  const host = process.env.HOST || "127.0.0.1";
-
+export function renderDashboardHtml(): string {
   return `
     <!DOCTYPE html>
     <html>
@@ -19,8 +17,8 @@ export function renderDashboardHtml(port = 8001): string {
           <h1>🛒 Commerce Operations MCP Server</h1>
           <p>Remotely hosted AI Model Context Protocol Server for E-Commerce Operations.</p>
           <h3>🌐 MCP Connection Endpoints:</h3>
-          <div class="endpoint">Primary MCP: <code>POST/GET/DELETE http://${host}:${port}/mcp</code></div>
-          <div class="endpoint">Health Status: <code>GET http://${host}:${port}/health</code></div>
+          <div class="endpoint">Primary MCP: <code id="mcp-endpoint">…</code></div>
+          <div class="endpoint">Health Status: <code id="health-endpoint">…</code></div>
           <p>Legacy clients may also use <code>/sse</code> and <code>/messages</code>.</p>
           <h3>🛠️ Registered Tools:</h3>
           <ul>
@@ -31,6 +29,13 @@ export function renderDashboardHtml(port = 8001): string {
             <li><code>issue_customer_credit</code></li>
           </ul>
         </div>
+        <script>
+          const origin = window.location.origin;
+          document.getElementById("mcp-endpoint").textContent =
+            "POST/GET/DELETE " + origin + "/mcp";
+          document.getElementById("health-endpoint").textContent =
+            "GET " + origin + "/health";
+        </script>
       </body>
     </html>
   `;
