@@ -17,23 +17,23 @@ Typical flow:
 
 ## MCP tools
 
-| Tool | What it does |
-|------|----------------|
-| `list_stuck_orders` | Lists orders in `FULFILLMENT_FAILED` |
+| Tool                      | What it does                                  |
+| ------------------------- | --------------------------------------------- |
+| `list_stuck_orders`       | Lists orders in `FULFILLMENT_FAILED`          |
 | `investigate_order_issue` | Root cause + stock view + suggested next step |
-| `reallocate_inventory` | Move order to another warehouse with stock |
-| `fix_shipping_address` | Update and validate shipping address |
-| `issue_customer_credit` | Add or deduct store credit (via order ID) |
+| `reallocate_inventory`    | Move order to another warehouse with stock    |
+| `fix_shipping_address`    | Update and validate shipping address          |
+| `issue_customer_credit`   | Add or deduct store credit (via order ID)     |
 
 Order IDs use the format `ORD-1001`. The agent usually converts “order 1001” to that format before calling a tool.
 
-## Hosted URL
+<!-- ## Hosted URL
 
 Add your deployed URL here after you deploy, for example:
 
 ```
 https://your-app.onrender.com/mcp
-```
+``` -->
 
 Health check: `GET /health`  
 Dashboard: `GET /`
@@ -107,13 +107,13 @@ Covers the database, tools, and HTTP endpoints (including MCP initialize).
 
 ## Sample orders (seed data)
 
-| Order | Issue |
-|-------|--------|
-| ORD-1001 | Out of stock at WH-EAST (stock at WH-WEST) |
-| ORD-1002 | Invalid shipping ZIP |
-| ORD-1003 | PAID, keyboard stock problem at WH-CENTRAL |
+| Order    | Issue                                          |
+| -------- | ---------------------------------------------- |
+| ORD-1001 | Out of stock at WH-EAST (stock at WH-WEST)     |
+| ORD-1002 | Invalid shipping ZIP                           |
+| ORD-1003 | PAID, keyboard stock problem at WH-CENTRAL     |
 | ORD-1004 | Out of stock at WH-EAST (chairs at WH-CENTRAL) |
-| ORD-1005 | Already SHIPPED (should block reallocation) |
+| ORD-1005 | Already SHIPPED (should block reallocation)    |
 
 ## Notes
 
