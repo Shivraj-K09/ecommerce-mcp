@@ -73,7 +73,7 @@ Restart the server if you want fresh seed data. The database lives in memory and
 
 ## Connect an MCP client
 
-**HTTP:** point your client at `http://localhost:3000/mcp` (or your hosted URL).
+**HTTP:** point your client at `http://localhost:8000/mcp` (or your hosted URL).
 
 **STDIO:** run `node build/index.js` or use the `mcp-server` bin after build.
 
@@ -119,4 +119,4 @@ Covers the database, tools, and HTTP endpoints (including MCP initialize).
 
 - `reallocate_inventory` sets status to `READY_FOR_SHIPMENT` — there is no separate “retrigger” tool.
 - Credit tool needs an **order ID**, not a customer ID like `CUST-501`.
-- If port 3000 is busy, set `PORT` or stop the other process.
+- If port 8000 is busy, set `PORT` or stop the other process.
