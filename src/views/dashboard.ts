@@ -17,9 +17,9 @@ export function renderDashboardHtml(): string {
           <h1>🛒 Commerce Operations MCP Server</h1>
           <p>Remotely hosted AI Model Context Protocol Server for E-Commerce Operations.</p>
           <h3>🌐 MCP Connection Endpoints:</h3>
-          <div class="endpoint">Primary MCP: <code id="mcp-endpoint">…</code></div>
+          <div class="endpoint">MCP (Streamable HTTP): <code id="mcp-endpoint">…</code></div>
           <div class="endpoint">Health Status: <code id="health-endpoint">…</code></div>
-          <p>Legacy clients may also use <code>/sse</code> and <code>/messages</code>.</p>
+          <p>Uses the current Streamable HTTP transport on a single <code>/mcp</code> endpoint.</p>
           <h3>🛠️ Registered Tools:</h3>
           <ul>
             <li><code>list_stuck_orders</code></li>

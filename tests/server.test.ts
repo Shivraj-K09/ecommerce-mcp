@@ -80,7 +80,7 @@ describe("Commerce Operations MCP HTTP Server", () => {
     expect(data.error.message).toContain("session");
   });
 
-  it("should route legacy /sse initialize requests through the same handler", async () => {
+  it("should not expose deprecated HTTP+SSE /sse endpoint", async () => {
     const res = await fetch(`http://localhost:${PORT}/sse`, {
       method: "POST",
       headers: {
@@ -99,7 +99,6 @@ describe("Commerce Operations MCP HTTP Server", () => {
       }),
     });
 
-    expect(res.status).toBe(200);
-    expect(res.headers.get("mcp-session-id")).toBeTruthy();
+    expect(res.status).toBe(404);
   });
 });

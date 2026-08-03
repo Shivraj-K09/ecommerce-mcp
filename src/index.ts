@@ -106,9 +106,9 @@ export async function startHttpServer(port: number): Promise<HttpServer> {
     res.send(renderDashboardHtml());
   });
 
+  // Single Streamable HTTP MCP endpoint (replaces deprecated HTTP+SSE /sse + /messages).
+  // Spec: https://modelcontextprotocol.io/specification/2025-03-26/basic/transports
   app.all("/mcp", handleMcpRoute);
-  app.all("/sse", handleMcpRoute);
-  app.all("/messages", handleMcpRoute);
 
   const httpServer = await new Promise<HttpServer>((resolve, reject) => {
     const server = app.listen(port, "0.0.0.0", (error?: Error) => {

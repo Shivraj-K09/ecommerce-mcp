@@ -38,7 +38,7 @@ https://your-app.onrender.com/mcp
 Health check: `GET /health`  
 Dashboard: `GET /`
 
-Legacy clients can also use `/sse` and `/messages`.
+MCP uses **Streamable HTTP** on a single `/mcp` endpoint (the current MCP remote transport). The older HTTP+SSE paths (`/sse`, `/messages`) are not used.
 
 ## Local setup
 
