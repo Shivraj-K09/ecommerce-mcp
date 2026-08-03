@@ -58,10 +58,12 @@ I tried to give constraints: no extra files unless needed, no `.js` extensions i
 
 ## Remaining gaps
 
-- **Public deploy URL** — still need to deploy (Render/Railway/Fly.io) and paste URL into README
 - **Demo video** — not recorded yet
 - **In-memory DB** — fine for the assignment; data resets on restart
 - **No auth on HTTP endpoint** — OK for synthetic demo; would need auth in production
+
+Deployed at: https://ecommerce-mcp-8dm5.onrender.com/mcp
+Repo: https://github.com/Shivraj-K09/ecommerce-mcp
 
 ## Risks if someone uses this for real
 

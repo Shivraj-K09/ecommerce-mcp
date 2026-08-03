@@ -27,18 +27,19 @@ Typical flow:
 
 Order IDs use the format `ORD-1001`. The agent usually converts “order 1001” to that format before calling a tool.
 
-<!-- ## Hosted URL
-
-Add your deployed URL here after you deploy, for example:
+## Hosted URL
 
 ```
-https://your-app.onrender.com/mcp
-``` -->
+https://ecommerce-mcp-8dm5.onrender.com/mcp
+```
+
+Dashboard: https://ecommerce-mcp-8dm5.onrender.com  
+Health: https://ecommerce-mcp-8dm5.onrender.com/health
 
 Health check: `GET /health`  
 Dashboard: `GET /`
 
-MCP uses **Streamable HTTP** on a single `/mcp` endpoint (the current MCP remote transport). The older HTTP+SSE paths (`/sse`, `/messages`) are not used.
+MCP uses **Streamable HTTP** on a single `/mcp` endpoint (the current MCP remote transport).
 
 ## Local setup
 
