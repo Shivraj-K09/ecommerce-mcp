@@ -1,4 +1,4 @@
-# Commerce Operations MCP Server
+# ecommerce-mcp
 
 A TypeScript MCP server for e-commerce ops teams. It helps an AI agent investigate stuck orders, fix common fulfillment problems, and log what changed.
 

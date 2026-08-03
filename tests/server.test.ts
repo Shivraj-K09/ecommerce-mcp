@@ -2,7 +2,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import type { Server } from "node:http";
 import { startHttpServer } from "../src/index";
 
-describe("Commerce Operations MCP HTTP Server", () => {
+describe("ecommerce-mcp HTTP Server", () => {
   let serverInstance: Server;
   const PORT = 3999;
 
@@ -19,7 +19,7 @@ describe("Commerce Operations MCP HTTP Server", () => {
     expect(res.status).toBe(200);
     const data = await res.json();
     expect(data.status).toBe("ok");
-    expect(data.server).toBe("commerce-ops");
+    expect(data.server).toBe("ecommerce-mcp");
     expect(data.version).toBe("1.0.0");
     expect(data.timestamp).toBeDefined();
   });
@@ -28,7 +28,7 @@ describe("Commerce Operations MCP HTTP Server", () => {
     const res = await fetch(`http://localhost:${PORT}/`);
     expect(res.status).toBe(200);
     const text = await res.text();
-    expect(text).toContain("Commerce Operations MCP Server");
+    expect(text).toContain("ecommerce-mcp");
     expect(text).toContain("list_stuck_orders");
     expect(text).toContain("/mcp");
   });
@@ -56,7 +56,7 @@ describe("Commerce Operations MCP HTTP Server", () => {
     expect(res.headers.get("mcp-session-id")).toBeTruthy();
 
     const text = await res.text();
-    expect(text).toContain("commerce-ops");
+    expect(text).toContain("ecommerce-mcp");
     expect(text).toContain('"tools"');
   });
 

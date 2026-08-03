@@ -6,7 +6,7 @@ Short log of how AI tools were used on this project and what I checked myself.
 
 - **Cursor** (agent mode) for most of the coding, debugging, and tests
 - **Context7 MCP** to read MCP TypeScript SDK docs (Streamable HTTP, sessions)
-- Manual agent testing in Cursor with the commerce-ops MCP connected
+- Manual agent testing in Cursor with the ecommerce-mcp MCP connected
 
 I did not stick to one model for everything. I used whatever Cursor routed for implementation and review.
 

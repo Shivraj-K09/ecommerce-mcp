@@ -3,7 +3,7 @@ export function renderDashboardHtml(): string {
     <!DOCTYPE html>
     <html>
       <head>
-        <title>Commerce Operations MCP Server</title>
+        <title>ecommerce-mcp</title>
         <style>
           body { font-family: system-ui, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; line-height: 1.6; }
           .card { background: #1e293b; padding: 2rem; border-radius: 12px; max-width: 650px; margin: 0 auto; border: 1px solid #334155; }
@@ -14,8 +14,8 @@ export function renderDashboardHtml(): string {
       </head>
       <body>
         <div class="card">
-          <h1>🛒 Commerce Operations MCP Server</h1>
-          <p>Remotely hosted AI Model Context Protocol Server for E-Commerce Operations.</p>
+          <h1>🛒 ecommerce-mcp</h1>
+          <p>Remotely hosted AI Model Context Protocol Server for e-commerce operations.</p>
           <h3>🌐 MCP Connection Endpoints:</h3>
           <div class="endpoint">MCP (Streamable HTTP): <code id="mcp-endpoint">…</code></div>
           <div class="endpoint">Health Status: <code id="health-endpoint">…</code></div>

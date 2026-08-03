@@ -1,7 +1,7 @@
 {
-  "name": "mcp-server",
+  "name": "ecommerce-mcp",
   "version": "1.0.0",
-  "description": "MCP Server",
+  "description": "Ecommerce MCP Server",
   "bin": {
     "mcp-server": "./build/index.js"
   },

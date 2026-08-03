@@ -14,7 +14,7 @@ dotenv.config();
 
 function createCommerceServer(): McpServer {
   const server = new McpServer({
-    name: "commerce-ops",
+    name: "ecommerce-mcp",
     version: "1.0.0",
   });
   registerCommerceTools(server);
@@ -96,7 +96,7 @@ export async function startHttpServer(port: number): Promise<HttpServer> {
   app.get("/health", (_req: Request, res: Response) => {
     res.json({
       status: "ok",
-      server: "commerce-ops",
+      server: "ecommerce-mcp",
       version: "1.0.0",
       timestamp: new Date().toISOString(),
     });
@@ -142,7 +142,7 @@ export async function startHttpServer(port: number): Promise<HttpServer> {
     process.on("SIGTERM", () => void shutdown());
   }
 
-  console.error(`Commerce Operations MCP Server running on HTTP port ${port}`);
+  console.error(`ecommerce-mcp Server running on HTTP port ${port}`);
   console.error(`MCP Endpoint: http://localhost:${port}/mcp`);
   console.error(`Health: http://localhost:${port}/health`);
 
@@ -153,7 +153,7 @@ async function startStdioServer() {
   const server = createCommerceServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("Commerce Operations MCP Server running on STDIO transport");
+  console.error("ecommerce-mcp Server running on STDIO transport");
 }
 
 async function main() {

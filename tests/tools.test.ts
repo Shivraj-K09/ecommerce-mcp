@@ -8,7 +8,7 @@ import {
   formatDiagnosticReport,
 } from "../src/formatters";
 
-describe("Commerce Operations MCP Tools (src/tools.ts)", () => {
+describe("ecommerce-mcp Tools (src/tools.ts)", () => {
   let server: McpServer;
 
   beforeEach(() => {
