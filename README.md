@@ -1,12 +1,12 @@
 # ecommerce-mcp
 
-A TypeScript MCP server for e-commerce operations teams. It helps an AI agent to investigate stuck orders, fix common fulfillment problems, and log what changed.
+A TypeScript MCP server for e-commerce ops teams. It helps an AI agent investigate stuck orders, fix common fulfillment problems, and log what changed.
 
 All data is fake (in-memory). Nothing connects to a real store.
 
 ## Problem this solves
 
-Operations teams often jump between order status, warehouse stock, shipping addresses, and error logs when something fails. This server puts that into MCP tools so an agent can run the workflow in one conversation.
+Ops teams often jump between order status, warehouse stock, shipping addresses, and error logs when something fails. This server puts that into MCP tools so an agent can run the workflow in one conversation.
 
 Typical flow:
 
@@ -33,8 +33,8 @@ Order IDs use the format `ORD-1001`. The agent usually converts “order 1001”
 https://ecommerce-mcp-8dm5.onrender.com/mcp
 ```
 
-Dashboard: [https://ecommerce-mcp-8dm5.onrender.com](https://ecommerce-mcp-8dm5.onrender.com)  
-Health: [https://ecommerce-mcp-8dm5.onrender.com/health](https://ecommerce-mcp-8dm5.onrender.com/health)
+Dashboard: https://ecommerce-mcp-8dm5.onrender.com  
+Health: https://ecommerce-mcp-8dm5.onrender.com/health
 
 Health check: `GET /health`  
 Dashboard: `GET /`
@@ -106,7 +106,7 @@ Covers the database, tools, and HTTP endpoints (including MCP initialize).
 - Full admin UI (only a small HTML status page)
 - CI/CD pipeline
 
-## Sample orders (fake data)
+## Sample orders (seed data)
 
 | Order    | Issue                                          |
 | -------- | ---------------------------------------------- |
