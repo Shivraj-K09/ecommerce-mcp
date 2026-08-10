@@ -7,9 +7,9 @@ export function registerReallocateInventoryTool(server: McpServer) {
     "reallocate_inventory",
     {
       description:
-        "Reassigns a stuck order to a different warehouse with available stock, clears failure flags, and sets the order to READY_FOR_SHIPMENT.",
+        "Submits a human-review escalation ticket to reassign a stuck order to an alternate warehouse with stock (does NOT auto-reallocate).",
       inputSchema: z.object({
-        orderId: z.string().describe("Order ID to reassign"),
+        orderId: z.string().describe("Order ID requiring reallocation"),
         targetWarehouseId: z
           .string()
           .describe("Target warehouse ID with available stock (e.g. WH-WEST)"),
@@ -30,21 +30,7 @@ export function registerReallocateInventoryTool(server: McpServer) {
           content: [
             {
               type: "text",
-              text: `Cannot reallocate: Order '${orderId}' has status '${order.status}' and is already finalized/in-transit.`,
-            },
-          ],
-        };
-      }
-
-      if (
-        order.assignedWarehouseId === targetWarehouseId &&
-        order.status === "READY_FOR_SHIPMENT"
-      ) {
-        return {
-          content: [
-            {
-              type: "text",
-              text: `No reallocation needed: Order '${orderId}' is already assigned to ${targetWarehouseId} and is READY_FOR_SHIPMENT.`,
+              text: `Cannot escalate: Order '${orderId}' has status '${order.status}' and is already finalized/in-transit.`,
             },
           ],
         };
@@ -70,25 +56,37 @@ export function registerReallocateInventoryTool(server: McpServer) {
             content: [
               {
                 type: "text",
-                text: `Cannot reallocate to ${targetWh.name} (${targetWarehouseId}): Insufficient stock for ${item.sku} (Required: ${item.quantity}, Available: ${available}).`,
+                text: `Cannot request reallocation to ${targetWh.name} (${targetWarehouseId}): Insufficient stock for ${item.sku} (Required: ${item.quantity}, Available: ${available}).`,
               },
             ],
           };
         }
       }
 
-      const oldWh = order.assignedWarehouseId;
-      db.updateOrderWarehouse(orderId, targetWarehouseId);
-      db.updateOrderStatus(orderId, "READY_FOR_SHIPMENT");
+      const evidence = {
+        currentWarehouseId: order.assignedWarehouseId,
+        proposedWarehouseId: targetWarehouseId,
+        proposedWarehouseName: targetWh.name,
+        items: order.items,
+      };
+
+      const ticket = db.createEscalationTicket(
+        orderId,
+        "WAREHOUSE_REROUTE",
+        `Request to reassign Order ${orderId} from ${order.assignedWarehouseId} to ${targetWh.name} (${targetWarehouseId})`,
+        evidence,
+      );
 
       return {
         content: [
           {
             type: "text",
             text:
-              `SUCCESS: Order ${orderId} has been successfully reassigned from ${oldWh} to ${targetWh.name} (${targetWarehouseId}).\n` +
-              `Status updated to: READY_FOR_SHIPMENT.\n` +
-              `Fulfillment pipeline has been re-triggered!`,
+              `SUCCESS: Created Human-Review Escalation Ticket '${ticket.id}' for Order ${orderId}.\n` +
+              `Type: WAREHOUSE_REROUTE\n` +
+              `Proposed Warehouse: ${targetWh.name} (${targetWarehouseId})\n` +
+              `Status: PENDING_HUMAN_REVIEW\n` +
+              `Operational change submitted for manager review (per safety guidelines).`,
           },
         ],
       };

@@ -8,7 +8,8 @@ import { StdioServerTransport } from "@modelcontextprotocol/server/stdio";
 import { createMcpExpressApp } from "@modelcontextprotocol/sdk/server/express";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp";
 import { registerCommerceTools } from "./tools";
-import { renderDashboardHtml } from "./views/dashboard";
+import { renderDashboardHtml, renderTableHtml } from "./views/dashboard";
+import { db } from "./db";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ function sendJsonRpcError(
 }
 
 export async function startHttpServer(port: number): Promise<HttpServer> {
+  await db.initDb();
   const app = createMcpExpressApp({ host: "0.0.0.0" });
   app.use(cors());
 
@@ -106,6 +108,35 @@ export async function startHttpServer(port: number): Promise<HttpServer> {
     res.send(renderDashboardHtml());
   });
 
+  app.get("/table", (_req: Request, res: Response) => {
+    res.send(renderTableHtml());
+  });
+
+  app.get("/api/dashboard-data", (_req: Request, res: Response) => {
+    res.json({
+      orders: db.getOrders(),
+      warehouses: db.getWarehouses(),
+      inventory: db.getAllInventory(),
+      tickets: db.getEscalationTickets(),
+      credits: db.getAllCustomerCredits(),
+      logs: db.getOrders().flatMap((o) => db.getLogsForOrder(o.id)),
+    });
+  });
+
+  app.all("/reset", async (_req: Request, res: Response) => {
+    try {
+      await db.resetPostgres();
+      res.json({
+        status: "ok",
+        message: "Database reset to clean initial seed data successfully.",
+        timestamp: new Date().toISOString(),
+      });
+    } catch (err) {
+      console.error("Error resetting database:", err);
+      res.status(500).json({ error: "Failed to reset database" });
+    }
+  });
+
   // Single Streamable HTTP MCP endpoint (replaces deprecated HTTP+SSE /sse + /messages).
   // Spec: https://modelcontextprotocol.io/specification/2025-03-26/basic/transports
   app.all("/mcp", handleMcpRoute);
@@ -150,6 +181,7 @@ export async function startHttpServer(port: number): Promise<HttpServer> {
 }
 
 async function startStdioServer() {
+  await db.initDb();
   const server = createCommerceServer();
   const transport = new StdioServerTransport();
   await server.connect(transport);

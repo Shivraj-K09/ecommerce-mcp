@@ -61,55 +61,50 @@ describe("ecommerce-mcp Tools (src/tools.ts)", () => {
     expect(order?.shippingAddress.zip).toBe("INVALID_ZIP");
   });
 
-  it("should reallocate ORD-1001 to WH-WEST, deduct stock, and update status to READY_FOR_SHIPMENT", () => {
-    const invBefore = db.getInventoryItem("SKU-HEADPHONES");
-    expect(invBefore?.stockByWarehouse["WH-WEST"]).toBe(25);
-
-    const updated = db.updateOrderWarehouse("ORD-1001", "WH-WEST");
-    expect(updated.assignedWarehouseId).toBe("WH-WEST");
-
-    const invAfter = db.getInventoryItem("SKU-HEADPHONES");
-    expect(invAfter?.stockByWarehouse["WH-WEST"]).toBe(24);
-
-    db.updateOrderStatus("ORD-1001", "READY_FOR_SHIPMENT");
-    const order = db.getOrder("ORD-1001");
-    expect(order?.status).toBe("READY_FOR_SHIPMENT");
-    expect(order?.failureReason).toBeUndefined();
-  });
-
-  it("should prevent reallocating to non-existent warehouse", () => {
-    expect(() => db.updateOrderWarehouse("ORD-1001", "WH-NONEXISTENT")).toThrow(
-      "Warehouse WH-NONEXISTENT not found",
+  it("should create a Human-Review Escalation Ticket for warehouse rerouting", () => {
+    const ticket = db.createEscalationTicket(
+      "ORD-1001",
+      "WAREHOUSE_REROUTE",
+      "Request to reassign to WH-WEST",
+      { proposedWarehouseId: "WH-WEST" },
     );
+    expect(ticket.id).toContain("TICKET-");
+    expect(ticket.status).toBe("PENDING_HUMAN_REVIEW");
+    expect(ticket.type).toBe("WAREHOUSE_REROUTE");
   });
 
-  it("should fix shipping address for ORD-1002 and clear failure status", () => {
-    const newAddress = {
-      street: "456 Correct St",
-      city: "San Jose",
-      state: "CA",
-      zip: "95112",
-      country: "US",
-      isValid: true,
-    };
-    db.updateShippingAddress("ORD-1002", newAddress);
-    db.updateOrderStatus("ORD-1002", "READY_FOR_SHIPMENT");
-
-    const order = db.getOrder("ORD-1002");
-    expect(order?.shippingAddress.zip).toBe("95112");
-    expect(order?.shippingAddress.isValid).toBe(true);
-    expect(order?.status).toBe("READY_FOR_SHIPMENT");
+  it("should create a Human-Review Escalation Ticket for address correction", () => {
+    const ticket = db.createEscalationTicket(
+      "ORD-1002",
+      "ADDRESS_CORRECTION",
+      "Request to update zip to 95112",
+      { zip: "95112" },
+    );
+    expect(ticket.id).toContain("TICKET-");
+    expect(ticket.status).toBe("PENDING_HUMAN_REVIEW");
+    expect(ticket.type).toBe("ADDRESS_CORRECTION");
   });
 
-  it("should issue goodwill store credit to customer", () => {
+  it("should issue goodwill store credit up to $25.00 max", () => {
     const credit = db.issueCustomerCredit(
       "CUST-501",
-      15.0,
-      "Appology for delayed shipment",
+      25.0,
+      "Apology for delayed shipment",
       "ORD-1001",
     );
-    expect(credit.balance).toBe(15.0);
-    expect(credit.history[0].amount).toBe(15.0);
+    expect(credit.balance).toBe(25.0);
+    expect(credit.history[0].amount).toBe(25.0);
+  });
+
+  it("should detect prior store credit granted for an order ID", () => {
+    db.issueCustomerCredit(
+      "CUST-501",
+      15.0,
+      "Apology for delay",
+      "ORD-1001",
+    );
+    const hasCredit = db.hasPriorCreditForOrder("ORD-1001");
+    expect(hasCredit).toBe(true);
   });
 
   it("should reject deducting store credit when customer balance is $0.00", () => {
@@ -119,10 +114,10 @@ describe("ecommerce-mcp Tools (src/tools.ts)", () => {
   });
 
   it("should reject deducting store credit when deduction exceeds available balance", () => {
-    db.issueCustomerCredit("CUST-501", 40.0, "Initial credit");
+    db.issueCustomerCredit("CUST-501", 20.0, "Initial credit");
     expect(() =>
       db.issueCustomerCredit("CUST-501", -50.0, "Exceeding deduction"),
-    ).toThrow("exceeds current customer balance ($40.00)");
+    ).toThrow("exceeds current customer balance ($20.00)");
   });
 
   it("should prevent reallocating an already SHIPPED order", () => {
@@ -132,24 +127,13 @@ describe("ecommerce-mcp Tools (src/tools.ts)", () => {
   });
 
   it("should successfully deduct store credit when customer has sufficient balance", () => {
-    db.issueCustomerCredit("CUST-501", 100.0, "Initial credit");
+    db.issueCustomerCredit("CUST-501", 25.0, "Initial credit");
     const updated = db.issueCustomerCredit(
       "CUST-501",
-      -50.0,
+      -10.0,
       "Valid deduction",
     );
-    expect(updated.balance).toBe(50.0);
-  });
-
-  it("should not deduct stock when reassigning an order to the same warehouse", () => {
-    const before = db.getInventoryItem("SKU-HEADPHONES")!.stockByWarehouse[
-      "WH-EAST"
-    ];
-    db.updateOrderWarehouse("ORD-1001", "WH-EAST");
-    const after = db.getInventoryItem("SKU-HEADPHONES")!.stockByWarehouse[
-      "WH-EAST"
-    ];
-    expect(after).toBe(before);
+    expect(updated.balance).toBe(15.0);
   });
 
   it("should recommend no action for orders already ready to ship", () => {

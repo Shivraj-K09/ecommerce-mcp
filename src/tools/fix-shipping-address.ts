@@ -7,9 +7,9 @@ export function registerFixShippingAddressTool(server: McpServer) {
     "fix_shipping_address",
     {
       description:
-        "Fixes invalid shipping address details (e.g. incorrect ZIP code) for a stuck order and resets it to READY_FOR_SHIPMENT.",
+        "Submits a human-review escalation ticket to correct invalid shipping address details for a stuck order (does NOT auto-update address).",
       inputSchema: z.object({
-        orderId: z.string().describe("Order ID to update"),
+        orderId: z.string().describe("Order ID requiring address correction"),
         street: z.string().optional().describe("Correct street address"),
         city: z.string().optional().describe("Correct city"),
         state: z.string().optional().describe("Correct two-letter state code"),
@@ -32,12 +32,13 @@ export function registerFixShippingAddressTool(server: McpServer) {
           content: [
             {
               type: "text",
-              text: `Cannot update shipping address: Order '${orderId}' has status '${order.status}' and is already in-transit/finalized.`,
+              text: `Cannot escalate: Order '${orderId}' has status '${order.status}' and is already finalized/in-transit.`,
             },
           ],
         };
       }
-      const updatedAddress = {
+
+      const proposedAddress = {
         street: street || order.shippingAddress.street,
         city: city || order.shippingAddress.city,
         state: state || order.shippingAddress.state,
@@ -46,17 +47,28 @@ export function registerFixShippingAddressTool(server: McpServer) {
         isValid: true,
       };
 
-      db.updateShippingAddress(orderId, updatedAddress);
-      db.updateOrderStatus(orderId, "READY_FOR_SHIPMENT");
+      const evidence = {
+        previousAddress: order.shippingAddress,
+        proposedAddress: proposedAddress,
+      };
+
+      const ticket = db.createEscalationTicket(
+        orderId,
+        "ADDRESS_CORRECTION",
+        `Request to update shipping address for Order ${orderId} to ZIP ${zip}`,
+        evidence,
+      );
 
       return {
         content: [
           {
             type: "text",
             text:
-              `SUCCESS: Shipping address for Order ${orderId} has been updated and validated.\n` +
-              `New Address: ${updatedAddress.street}, ${updatedAddress.city}, ${updatedAddress.state} ${updatedAddress.zip}, ${updatedAddress.country}\n` +
-              `Status updated to: READY_FOR_SHIPMENT. Fulfillment pipeline re-triggered!`,
+              `SUCCESS: Created Human-Review Escalation Ticket '${ticket.id}' for Order ${orderId}.\n` +
+              `Type: ADDRESS_CORRECTION\n` +
+              `Proposed Address: ${proposedAddress.street}, ${proposedAddress.city}, ${proposedAddress.state} ${proposedAddress.zip}, ${proposedAddress.country}\n` +
+              `Status: PENDING_HUMAN_REVIEW\n` +
+              `Address correction submitted for human review (per safety guidelines).`,
           },
         ],
       };
